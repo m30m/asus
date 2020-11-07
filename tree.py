@@ -20,3 +20,13 @@ class Node(object):
                 if child.evaluate()==True:
                     return False
             return False
+
+    def __str__(self):
+        if type == "boolean_expression":
+            return self.value.__str__()
+        else:
+            str = self.type + "["
+            for node in self.children:
+                str = str + node.__str__()
+            str = str + "]"
+            return str

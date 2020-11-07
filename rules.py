@@ -21,21 +21,12 @@ class Rule():
             return Node("boolean_expression", parent=parent_node, value=expr)
         elif "children" in child_dict["query"]:
             node = Node(child_dict["query"]["logicalOperator"],parent=parent_node)
-            for child in child_dict["children"]:
+            for child in child_dict["query"]["children"]:
                 node.children.append(self.build_tree(node, child))
 
 
     def evaluate(self):
-        flag1= True
-        for expr in self.all_expressions:
-            if expr.evaluate() == False:
-                flag1= False
-        flag2 = False
-        for expr in self.any_expressions:
-            if expr.evaluate() == True:
-                flag2 = True
-        return flag1 or flag2
-
+        return self.root.evaluate()
     def execute(self):
         if self.evaluate():
             for action in self.actions.values():
@@ -91,7 +82,7 @@ class BooleanExpression():
 """
 if __name__ == "__main__":
     amme = {
-      "logicalOperator": "all",
+      "logicalOperator": "any",
       "children": [
         {
           "type": "query-builder-rule",
@@ -99,7 +90,7 @@ if __name__ == "__main__":
             "rule": 0,
             "operator": "=",
             "operand": "Vegetable",
-            "value": 20
+            "value": 0
           }
         },
         {
@@ -139,5 +130,6 @@ if __name__ == "__main__":
         }
       ]
     }
-
-
+    rule = Rule(amme)
+    print(rule.root)
+    print(rule.evaluate())

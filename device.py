@@ -3,3 +3,6 @@ class Device:
         self.device_id = device_id
         self.state_type = state_type
         self.range = value_range
+
+    def build_rule(self):
+        raise NotImplemented

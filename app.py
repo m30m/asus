@@ -19,11 +19,11 @@ def lamp():
 
 device_ids = {}
 
-
 @socketio.on('admin')
 def handle_admin(message):
     print("%s connected" % (request.sid))
     app.admin_id = request.sid
+    emit('update', device_ids)
 
 
 @socketio.on('act')
@@ -45,4 +45,4 @@ def handle_message(message):
 
 if __name__ == '__main__':
     app.admin_id = None
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, host='0.0.0.0')

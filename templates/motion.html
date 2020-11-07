@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
-{% block title %}Smart Door Lock Page{% endblock %}
+{% block title %}Motion Sensor Page{% endblock %}
 {% block body %}
   {% raw %}
   <div id="app">
-    <h1 class="ui center aligned header">Smart Door Lock Control Panel</h1>
+    <h1 class="ui center aligned header">Motion Sensor Control Panel</h1>
 
     <div class="ui hidden divider"></div>
 
     <div class="ui one column stackable center aligned page padded grid">
-      <img v-if="state" class="ui medium rounded image" src="/static/images/opendoor.png"/>
-      <img v-else class="ui medium rounded image" src="/static/images/closeddoor.png"/>
-
+      <img class="ui medium rounded image" src="/static/images/motion-sensor.jpg"/>
     </div>
 
     <div class="ui hidden divider"></div>
@@ -36,26 +34,26 @@
       watch: {
         state: function () {
           if (this.socket) {
-            this.socket.emit('update_state', { state: this.state })
+            this.socket.emit('update_state', {state: this.state})
           }
         }
       },
       methods: {
         getText: function () {
-          if (this.state) return 'locked'
-          return 'unlocked'
+          if (this.state) return 'motion'
+          return 'no motion'
         }
       },
       created: function () {
         console.log('Starting connection to WebSocket Server')
-        socket = io();
-        this.socket = socket;
-        let vm = this;
+        socket = io()
+        this.socket = socket
+        let vm = this
         socket.on('connect', function () {
-          socket.emit('init', { type:'door', state: vm.state })
+          socket.emit('init', { type:'motion', state: vm.state })
         });
         socket.on('act', data => {
-          console.log(data);
+          console.log(data)
           vm.state = data.state
         })
       }

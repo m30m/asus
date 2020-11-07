@@ -7,7 +7,7 @@ class Rule():
         self.weight = weight
         self.all_expressions = []
         for expr in statements["all"]:
-            all_expressions.append(BooleanExpression(*expr))
+            self.all_expressions.append(BooleanExpression(*expr))
         self.any_expressions = []
         for expr in statements["any"]:
             self.any_expressions.append(BooleanExpression(*expr))
@@ -50,6 +50,7 @@ class BooleanExpression():
         elif rhs["type"] == 'discrete':
             right_state_type = "discrete"
         assert(left_state_type==right_state_type)
+
     def evaluate(self):
         if self.lhs["type"] == "device":
             device = device_list[self.lhs["id"]]

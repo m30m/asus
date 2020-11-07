@@ -18,7 +18,7 @@ class Node(object):
         elif self.type == "any":
             for child in self.children:
                 if child.evaluate()==True:
-                    return False
+                    return True
             return False
 
     def __str__(self):

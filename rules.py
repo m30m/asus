@@ -83,7 +83,7 @@ class BooleanExpression():
 """
 if __name__ == "__main__":
     amme = {
-      "logicalOperator": "any",
+      "logicalOperator": "all",
       "children": [
         {
           "type": "query-builder-rule",
@@ -112,7 +112,7 @@ if __name__ == "__main__":
                 "type": "query-builder-rule",
                 "query": {
                   "rule": 0,
-                  "operator": "<",
+                  "operator": ">",
                   "operand": "Vegetable",
                   "value": 5
                 }

@@ -4,7 +4,7 @@ from boolexpr import BooleanExpression
 device_list = {}
 
 class Rule():
-    def __init__(self, rule_dict, actions, weight = 1):
+    def __init__(self, rule_dict, actions=None, weight = 1):
         self.actions = actions
         self.weight = weight
         self.rule_dict = rule_dict
@@ -15,9 +15,9 @@ class Rule():
     def build_tree(self,parent_node, child_dict):
         if "children" not in child_dict["query"]:
             rule = child_dict["query"]["rule"]
+            value = child_dict["query"]["value"]
             operator = child_dict["query"]["operator"]
-            operand = child_dict["query"]["operand"]
-            expr = BooleanExpression(rule, operator, operand)
+            expr = BooleanExpression(rule, value, operator)
             return Node("boolean_expression", parent=parent_node, value=expr)
         elif "children" in child_dict["query"]:
             node = Node(child_dict["query"]["logicalOperator"],parent=parent_node)
@@ -41,7 +41,7 @@ class Rule():
             for action in self.actions.values():
                 device = device_list[action["id"]]
                 device.set_state(action["set_value"])
-
+"""
 class BooleanExpression():
     def __init__(self, lhs, rhs, op):
         self.lhs = lhs
@@ -87,3 +87,57 @@ class BooleanExpression():
             return left_value <= right_value
         elif self.op == ">=":
             return left_value <= right_value
+
+"""
+if __name__ == "__main__":
+    amme = {
+      "logicalOperator": "all",
+      "children": [
+        {
+          "type": "query-builder-rule",
+          "query": {
+            "rule": 0,
+            "operator": "=",
+            "operand": "Vegetable",
+            "value": 20
+          }
+        },
+        {
+          "type": "query-builder-rule",
+          "query": {
+            "rule": 0,
+            "operand": "Fruit",
+            "operator": "<",
+            "value": 20
+          }
+        },
+        {
+          "type": "query-builder-group",
+          "query": {
+            "logicalOperator": "any",
+            "children": [
+              {
+                "type": "query-builder-rule",
+                "query": {
+                  "rule": 0,
+                  "operator": "<",
+                  "operand": "Vegetable",
+                  "value": 5
+                }
+              },
+              {
+                "type": "query-builder-rule",
+                "query": {
+                  "rule": 0,
+                  "operator": "<",
+                  "operand": "Vegetable",
+                  "value": -20
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+
+

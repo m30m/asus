@@ -3,8 +3,8 @@ import time
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, emit
 
-from actuator import Door, Actuator
-from sensor import Sensor
+from actuator import Door, Lamp, Actuator
+from sensor import Sensor, Motion, Noise, Proximity
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -14,6 +14,21 @@ socketio = SocketIO(app)
 def main():
     return render_template('index.html')
 
+@app.route('/proximity')
+def proximity():
+    return render_template('proximity.html')
+
+@app.route('/noise')
+def noise():
+    return render_template('noise.html')
+
+@app.route('/motion')
+def motion():
+    return render_template('motion.html')
+
+@app.route('/lamp')
+def lamp():
+    return render_template('lamp.html')
 
 @app.route('/door')
 def door():
@@ -33,8 +48,8 @@ def handle_admin(message):
 @socketio.on('act')
 def handle_act(message):
     device_id = message['device_id']
-    status = message['status']
-    emit('act', {'status': status}, room=device_id)
+    state = message['state']
+    emit('act', {'state': state}, room=device_id)
 
 
 @socketio.on('init')
@@ -42,6 +57,17 @@ def init_device(message):
     device_id = request.sid
     if message['type'] == 'door':
         device_ids[device_id] = Door(device_id, message['state'])
+    if message['type'] == 'lamp':
+        device_ids[device_id] = Lamp(device_id, message['state'])
+    if message['type'] == 'motion':
+        device_ids[device_id] = Motion(device_id)
+        device_ids[device_id].recieve_state(message['state'])
+    if message['type'] == 'noise':
+        device_ids[device_id] = Noise(device_id)
+        device_ids[device_id].recieve_state(message['state'])
+    if message['type'] == 'proximity':
+        device_ids[device_id] = Proximity(device_id)
+        device_ids[device_id].recieve_state(message['state'])
     update_admin()
 
 
@@ -69,7 +95,7 @@ def update_rules(message):
 def update_admin():
     if app.admin_id is None:
         return
-    devices = [{'id': x, 'status': device.get_state(), 'is_actuator': isinstance(device, Actuator)} for x, device in
+    devices = [{'id': x, 'state': device.get_state(), 'is_actuator': isinstance(device, Actuator)} for x, device in
                device_ids.items()]
     builder_rules = [
     ]

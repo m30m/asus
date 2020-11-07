@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Lamp Page{% endblock %}
+{% block body %}
+  {% raw %}
+  <div id="app">
+    <h1 class="ui center aligned header">Smart Lamp Control Panel</h1>
+
+    <div class="ui hidden divider"></div>
+
+    <div class="ui one column stackable center aligned page padded grid">
+      <img v-bind:style="{opacity: state/100}" class="ui medium rounded image" src="/static/images/lamp.jpg"/>
+    </div>
+
+    <div class="ui hidden divider"></div>
+
+    <div class="ui container">
+      <div class="ui one column center aligned padded grid">
+        <div id="progressbar" class="ui indicating progress" data-total="100">
+          <div class="bar">
+            <div class="progress"></div>
+          </div>
+          <button @click="state += 10" class="ui positive basic button">Increase</button>
+        <button @click="state -= 10" class="ui negative basic button">Decrease</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
+  <script type="text/javascript" charset="utf-8">
+
+
+    var app = new Vue({
+      el: '#app',
+      data: {
+        state: 50,
+        socket: null
+      },
+      watch: {
+        state: function () {
+          if(this.state > 100) this.state = 100;
+          if(this.state < 0) this.state = 0;
+
+          if (this.socket) {
+            this.socket.emit('update_state', {state: this.state})
+          }
+          $('#progressbar').progress({percent: this.state});
+        }
+      },
+      methods: {
+        getText: function () {
+          return this.state+"%"
+
+        }
+
+      },
+      created: function () {
+        console.log('Starting connection to WebSocket Server')
+        socket = io();
+        this.socket = socket;
+        let vm = this;
+        socket.on('connect', function () {
+          socket.emit('init', { type:'lamp', state: vm.state })
+        });
+        socket.on('act', data => {
+          console.log(data);
+          vm.state = data.state
+        });
+        $('#progressbar').progress({percent: this.state});
+      }
+    })
+  </script>
+  {% endraw %}
+{% endblock %}

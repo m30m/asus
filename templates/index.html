@@ -10,15 +10,23 @@
 {% block body %}{% raw %}
     <div id="app">
         <a href="/lamp" target="_blank">Create a lamp</a>
+        <div class="ui hidden divider"></div>
         <a href="/door" target="_blank">Create a door</a>
+        <div class="ui hidden divider"></div>
+        <a href="/motion" target="_blank">Create a motion sensor</a>
+        <div class="ui hidden divider"></div>
+        <a href="/noise" target="_blank">Create a noise sensor</a>
+        <div class="ui hidden divider"></div>
+        <a href="/proximity" target="_blank">Create a proximity sensor</a>
+        <div class="ui hidden divider"></div>
 
-        <h2>Lamp status</h2>
+        <h2>Device State</h2>
         <ul id="example-1">
             <li v-for="item in devices">
                 {{ item.id }}:
                 <div class="ui toggle checkbox">
-                    <input type="checkbox" v-model="item.status" name="public"
-                           @change="send_status(item.id,item.status)"><label></label>
+                    <input type="checkbox" v-model="item.state" name="public"
+                           @change="send_state(item.id,item.state)"><label></label>
                 </div>
             </li>
         </ul>
@@ -74,8 +82,8 @@
         }
       },
       methods: {
-        send_status: function (device_id, status) {
-          socket.emit('act', { device_id: device_id, status: status })
+        send_state: function (device_id, state) {
+          socket.emit('act', { device_id: device_id, state: state })
         },
         add_rule: function () {
           this.current_query = {}
@@ -131,3 +139,4 @@
     </script>
     {% endraw %}
 {% endblock %}
+

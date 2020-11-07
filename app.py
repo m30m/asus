@@ -61,13 +61,13 @@ def init_device(message):
         device_ids[device_id] = Lamp(device_id, message['state'])
     if message['type'] == 'motion':
         device_ids[device_id] = Motion(device_id)
-        device_ids[device_id].recieve_state(message['state'])
+        device_ids[device_id].receive_state(message['state'])
     if message['type'] == 'noise':
         device_ids[device_id] = Noise(device_id)
-        device_ids[device_id].recieve_state(message['state'])
+        device_ids[device_id].receive_state(message['state'])
     if message['type'] == 'proximity':
         device_ids[device_id] = Proximity(device_id)
-        device_ids[device_id].recieve_state(message['state'])
+        device_ids[device_id].receive_state(message['state'])
     update_admin()
 
 

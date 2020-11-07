@@ -6,7 +6,11 @@ class BooleanExpression():
         self.lhs = rule
         self.rhs = operand
         self.op = operator
-        self.left_value = device_ids[rule].get_state()
+        if rule == 0:
+            self.left_value = 0
+        else:
+            self.left_value = device_ids[rule].get_state()
+        #self.left_value = device_ids[rule].get_state()
         self.right_value = self.rhs["value"]
 
     def evaluate(self):

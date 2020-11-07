@@ -4,6 +4,7 @@ from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, emit
 
 from actuator import Door, Lamp, Actuator
+from rules import Rule
 from sensor import Sensor, Motion, Noise, Proximity
 
 app = Flask(__name__)
@@ -88,6 +89,11 @@ def update_state(message):
 def update_rules(message):
     global rules
     rules = message
+    for r in rules:
+        print(r)
+        rule = Rule(r)
+        print(rule.root)
+        print(rule.evaluate())
     print('updating rules')
     print(rules)
 

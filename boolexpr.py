@@ -1,4 +1,3 @@
-from app import device_ids
 
 
 class BooleanExpression():
@@ -7,6 +6,7 @@ class BooleanExpression():
 
         self.op = operator
 
+        from app import device_ids
         self.lhs = device_ids[rule].get_state()
 
         self.rhs = value

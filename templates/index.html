@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<a href="/lamp" target="_blank">Create a lamp</a>
+
+<h2>Lamp status</h2>
+<p id="content">
+
+</p>
+<script src="static/jquery-3.5.1.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+        integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+let socket = io()
+socket.on('connect', function () {
+  socket.emit('admin', {})
+})
+
+socket.on('update', data => {
+  console.log(data)
+  let content = $(document.getElementById('content'))
+  content.empty()
+  for (var device in data) {
+    var checked_str = ''
+    if (data[device] == 'true')
+      checked_str = 'checked'
+    content.append(device + '<input class="checkbox" onchange="send_status(event)" type="checkbox"' + checked_str + ' id="' + device + '"/>')
+    content.append('<br/>')
+  }
+})
+
+function send_status (e) {
+  socket.emit('act', { device_id: e.target.id, status: e.target.checked })
+}
+
+</script>
+</body>
+</html>

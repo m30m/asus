@@ -15,7 +15,7 @@ class Node(object):
                 if child.evaluate()==False:
                     return False
             return True
-        elif type == "any"
+        elif type == "any":
             for child in self.children:
                 if child.evaluate()==True:
                     return False

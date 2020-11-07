@@ -23,6 +23,7 @@ class Rule():
             node = Node(child_dict["query"]["logicalOperator"],parent=parent_node)
             for child in child_dict["query"]["children"]:
                 node.children.append(self.build_tree(node, child))
+            return node
 
 
     def evaluate(self):

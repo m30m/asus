@@ -26,7 +26,7 @@ class BooleanExpression():
         elif self.op == "<=":
             return self.lhs <= self.rhs
         elif self.op == ">=":
-            return self.lhs <= self.rhs
+            return self.lhs >= self.rhs
 
     def update(self):
         self.lhs = device_ids[self.lhs].get_state()

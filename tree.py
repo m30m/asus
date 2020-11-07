@@ -22,11 +22,11 @@ class Node(object):
             return False
 
     def __str__(self):
-        if type == "boolean_expression":
+        if self.type == "boolean_expression":
             return self.value.__str__()
         else:
             str = self.type + "["
             for node in self.children:
-                str = str + node.__str__()
+                str = str + node.__str__() + " "
             str = str + "]"
             return str

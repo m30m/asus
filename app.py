@@ -69,7 +69,8 @@ def update_rules(message):
 def update_admin():
     if app.admin_id is None:
         return
-    devices = [{'id': x, 'status': device.get_state()} for x, device in device_ids.items()]
+    devices = [{'id': x, 'status': device.get_state(), 'is_actuator': isinstance(device, Actuator)} for x, device in
+               device_ids.items()]
     builder_rules = [
     ]
     for device in devices:

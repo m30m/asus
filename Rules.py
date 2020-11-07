@@ -26,7 +26,7 @@ class Rule():
     def execute(self):
         if self.evaluate():
             for action in self.actions.values():
-                device = device_list[lhs["id"]]
+                device = device_list[action["id"]]
                 device.set_state(action["set_value"])
 
 class BooleanExpression():

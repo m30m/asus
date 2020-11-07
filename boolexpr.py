@@ -22,5 +22,6 @@ class BooleanExpression():
             return self.lhs <= self.rhs
 
     def update(self):
-        self.lhs = device_ids[se
+        from app import device_ids
+        self.lhs = device_ids[self.rule].get_state()
 

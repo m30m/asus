@@ -14,7 +14,7 @@ def main():
 
 @app.route('/lamp')
 def lamp():
-    return render_template('lamp.html')
+    return render_template('door_lock.html')
 
 
 device_ids = {}

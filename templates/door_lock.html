@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" type="text/css" href="/static/semantic/dist/semantic.min.css">
+<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+<script src="/static/semantic/dist/semantic.min.js"></script>
+<head>
+   <!-- Standard Meta -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <!-- Site Properties -->
+  <title>Responsive Elements - Semantic</title>
+  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/semantic.css">
+
+  <script src="assets/library/jquery.min.js"></script>
+  <script src="/static/semantic/dist/semantic.js"></script>
+
+  <meta charset="UTF-8">
+  <title>Lamp Page</title>
+</head>
+
+<body>
+
+<h1 class="ui center aligned header">Smart Door Lock Control Panel</h1>
+
+
+<div class="ui stackable two column vertically divided grid container">
+  <div class="row">
+    <div class="column">
+      <div class="ui segment">State of The Lock</div>
+    </div>
+    <div class="column">
+      <div class="ui segment">
+        <div class="ui toggle checkbox">
+          <input type="checkbox" id="checkbox" onchange="send_status()" name="public">
+        <label>lock</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+        integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+let socket = io()
+let device_id = Math.random().toString(36).substring(7)
+
+function send_status () {
+  status = document.getElementById('checkbox').checked
+  socket.emit('sense', { status: status })
+}
+
+socket.on('connect', function () {
+  send_status()
+})
+
+socket.on('act', data => {
+  console.log(data)
+  document.getElementById('checkbox').checked = data.status
+})
+</script>
+</body>
+</html>

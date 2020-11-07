@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Proximity Sensor Page{% endblock %}
+{% block body %}
+  {% raw %}
+  <div id="app">
+    <h1 class="ui center aligned header">Proximity Sensor Control Panel</h1>
+
+    <div class="ui hidden divider"></div>
+
+    <div class="ui one column stackable center aligned page padded grid">
+      <i class="massive map marker alternate icon"></i>
+    </div>
+
+    <div class="ui hidden divider"></div>
+
+    <div class="ui container">
+      <div class="ui two column stackable center aligned page padded grid">
+        <div class="column">
+          <div class="ui statistic">
+            <div class="value">
+              {{ state }}(m)
+            </div>
+            <div class="label">
+              Current Distance
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          Change the sensor value:
+          <div class="ui hidden divider"></div>
+          <div class="ui right labeled input">
+            <input id="distval" type="number" placeholder="Enter distance..">
+            <div class="ui basic label">
+              m
+            </div>
+          </div>
+          <button @click="updateState()" class="ui primary button">
+          Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script type="text/javascript" charset="utf-8">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        state: 120,
+        socket: null
+      },
+      watch: {
+        state: function () {
+          if (this.socket) {
+            this.socket.emit('update_state', {state: this.state})
+          }
+        }
+      },
+      methods: {
+        getText: function () {
+          if (this.state) return 'suspicious noise detected'
+          return 'no suspicious noise'
+        },
+        updateState: function() {
+          this.state = parseInt($("#distval").val())
+        }
+      },
+      created: function () {
+        console.log('Starting connection to WebSocket Server')
+        socket = io()
+        this.socket = socket
+        let vm = this
+        socket.on('connect', function () {
+          socket.emit('init', { type:'proximity', state: vm.state })
+        });
+        socket.on('act', data => {
+          console.log(data)
+          vm.state = data.state
+        })
+      }
+    })
+  </script>
+  {% endraw %}
+{% endblock %}

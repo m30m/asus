@@ -29,7 +29,7 @@
       watch: {
         status: function () {
           if (this.socket) {
-            this.socket.emit('sense', { status: this.status })
+            this.socket.emit('update_state', { state: this.status })
           }
         }
       },
@@ -45,11 +45,11 @@
         this.socket = socket
         let vm = this
         socket.on('connect', function () {
-          socket.emit('sense', { status: vm.status })
+          socket.emit('init', { type:'door', state: vm.status })
         })
         socket.on('act', data => {
           console.log(data)
-          vm.status = data.status
+          vm.status = data.state
         })
       }
     })

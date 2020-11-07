@@ -1,4 +1,4 @@
-from Device import Device
+from device import Device
 
 
 class Sensor(Device):
@@ -6,7 +6,10 @@ class Sensor(Device):
         super().__init__(sensor_id, value_type, value_range)
 
     def get_state(self):
-        pass
+        return self.state
+
+    def receive_state(self, state):
+        self.state = state
 
 
 class Motion(Sensor):

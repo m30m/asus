@@ -2,6 +2,10 @@
 {% block title %} Admin Dashboard {% endblock %}
 {% block header %}
     <script src="https://unpkg.com/vue-query-builder@0.7.1/dist/VueQueryBuilder.umd.min.js"></script>
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/vue-query-builder@0.8.2/dist/VueQueryBuilder.css"
+    />
 {% endblock %}
 {% block body %}{% raw %}
     <div id="app">
@@ -18,19 +22,61 @@
                 </div>
             </li>
         </ul>
+
+        Current rules:
+        <ul>
+            <li v-for="rule in rules">
+                {{ rule.name }} : <input type="button" @click="edit_rule(rule)" value="Edit"/>
+            </li>
+            <li><input type="button" @click="add_rule" value="Add new rule"/></li>
+        </ul>
+        <div v-if="builder_state">
+            <input type="text" placeholder="Rule Name" v-model="current_rule_name"/>
+            <vue-query-builder :rules="builder_rules" v-model="current_query"></vue-query-builder>
+            <input type="button" @click="save_rule" value="Save rule"/>
+        </div>
     </div>
     <script type="text/javascript" charset="utf-8">
-
 
     var app = new Vue({
       el: '#app',
       data: {
         devices: {},
-        socket: null
+        socket: null,
+        builder_rules: [],
+        rules: [],
+        builder_state: false,
+        current_rule_name: '',
+        current_query: {},
+        current_rule: null,
       },
+      components: { VueQueryBuilder: window.VueQueryBuilder },
       methods: {
         send_status: function (device_id, status) {
           socket.emit('act', { device_id: device_id, status: status })
+        },
+        add_rule: function () {
+          this.builder_state = true
+          this.current_rule_name = ''
+          this.current_query = {}
+          this.current_rule = null
+        },
+        edit_rule: function (rule) {
+          this.current_rule = rule
+          this.builder_state = true
+          this.current_query = rule.query
+          this.current_rule_name = rule.name
+        },
+        save_rule: function () {
+          console.log(this.current_query)
+          if (this.current_rule == null) {
+            this.rules.push({ 'name': this.current_rule_name, 'query': this.current_query })
+          } else {
+            this.current_rule.query = this.current_query
+            this.current_rule.name = this.current_rule_name
+          }
+          this.builder_state = false
+          socket.emit('update_rules', this.rules)
         }
       },
       created: function () {
@@ -43,7 +89,9 @@
         })
         socket.on('update', data => {
           console.log(data)
-          vm.devices = data
+          vm.devices = data.devices
+          vm.builder_rules = data.builder_rules
+          vm.rules = data.rules
         })
       }
     })

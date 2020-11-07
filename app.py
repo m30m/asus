@@ -3,6 +3,9 @@ import time
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, emit
 
+from actuator import Door, Actuator
+from sensor import Sensor
+
 app = Flask(__name__)
 socketio = SocketIO(app)
 
@@ -12,12 +15,13 @@ def main():
     return render_template('index.html')
 
 
-@app.route('/lamp')
-def lamp():
+@app.route('/door')
+def door():
     return render_template('door_lock.html')
 
 
 device_ids = {}
+rules = []
 
 @socketio.on('admin')
 def handle_admin(message):
@@ -33,18 +37,51 @@ def handle_act(message):
     emit('act', {'status': status}, room=device_id)
 
 
-@socketio.on('sense')
-def handle_message(message):
+@socketio.on('init')
+def init_device(message):
+    device_id = request.sid
+    if message['type'] == 'door':
+        device_ids[device_id] = Door(device_id, message['state'])
+    update_admin()
+
+
+@socketio.on('update_state')
+def update_state(message):
     print("%s connected" % (request.sid))
     print(message)
-    device_ids[request.sid] = message['status']
+    device = device_ids[request.sid]
+    if isinstance(device, Sensor):
+        device.receive_state(message['state'])
+    elif isinstance(device, Actuator):
+        device.set_state(message['state'])
     print('received message: ' + str(message))
     update_admin()
 
 
+@socketio.on('update_rules')
+def update_rules(message):
+    global rules
+    rules = message
+    print('updating rules')
+    print(rules)
+
+
 def update_admin():
-    if app.admin_id:
-        emit('update', [{'id': x, 'status': status} for x, status in device_ids.items()], room=app.admin_id)
+    if app.admin_id is None:
+        return
+    devices = [{'id': x, 'status': device.get_state()} for x, device in device_ids.items()]
+    builder_rules = [
+    ]
+    for device in devices:
+        builder_rules.append(
+            {
+                'type': 'radio',
+                'label': 'Smart Door #%s' % device['id'][:4],
+                'id': device['id'],
+                'choices': [{'label': "Locked", 'value': False}, {'label': "Unlocked", 'value': True}]
+            }
+        )
+    emit('update', {'devices': devices, 'builder_rules': builder_rules, 'rules': rules}, room=app.admin_id)
 
 
 if __name__ == '__main__':

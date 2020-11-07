@@ -23,7 +23,7 @@ device_ids = {}
 def handle_admin(message):
     print("%s connected" % (request.sid))
     app.admin_id = request.sid
-    emit('update', device_ids)
+    update_admin()
 
 
 @socketio.on('act')
@@ -39,8 +39,12 @@ def handle_message(message):
     print(message)
     device_ids[request.sid] = message['status']
     print('received message: ' + str(message))
+    update_admin()
+
+
+def update_admin():
     if app.admin_id:
-        emit('update', device_ids, room=app.admin_id)
+        emit('update', [{'id': x, 'status': status} for x, status in device_ids.items()], room=app.admin_id)
 
 
 if __name__ == '__main__':

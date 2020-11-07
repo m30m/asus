@@ -1,35 +1,52 @@
 {% extends 'base.html' %}
 {% block title %} Admin Dashboard {% endblock %}
-{% block body %}
-<a href="/lamp" target="_blank">Create a lamp</a>
-<a href="/door" target="_blank">Create a door</a>
+{% block header %}
+    <script src="https://unpkg.com/vue-query-builder@0.7.1/dist/VueQueryBuilder.umd.min.js"></script>
+{% endblock %}
+{% block body %}{% raw %}
+    <div id="app">
+        <a href="/lamp" target="_blank">Create a lamp</a>
+        <a href="/door" target="_blank">Create a door</a>
 
-<h2>Lamp status</h2>
-<p id="content">
+        <h2>Lamp status</h2>
+        <ul id="example-1">
+            <li v-for="item in devices">
+                {{ item.id }}:
+                <div class="ui toggle checkbox">
+                    <input type="checkbox" v-model="item.status" name="public"
+                           @change="send_status(item.id,item.status)"><label></label>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <script type="text/javascript" charset="utf-8">
 
-</p>
-<script type="text/javascript" charset="utf-8">
-let socket = io()
-socket.on('connect', function () {
-  socket.emit('admin', {})
-})
 
-socket.on('update', data => {
-  console.log(data)
-  let content = $(document.getElementById('content'))
-  content.empty()
-  for (var device in data) {
-    var checked_str = ''
-    if (data[device])
-      checked_str = 'checked'
-    content.append(device + '<input class="checkbox" onchange="send_status(event)" type="checkbox"' + checked_str + ' id="' + device + '"/>')
-    content.append('<br/>')
-  }
-})
-
-function send_status (e) {
-  socket.emit('act', { device_id: e.target.id, status: e.target.checked })
-}
-
-</script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        devices: {},
+        socket: null
+      },
+      methods: {
+        send_status: function (device_id, status) {
+          socket.emit('act', { device_id: device_id, status: status })
+        }
+      },
+      created: function () {
+        console.log('Starting connection to WebSocket Server')
+        socket = io()
+        this.socket = socket
+        let vm = this
+        socket.on('connect', function () {
+          socket.emit('admin', {})
+        })
+        socket.on('update', data => {
+          console.log(data)
+          vm.devices = data
+        })
+      }
+    })
+    </script>
+    {% endraw %}
 {% endblock %}

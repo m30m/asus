@@ -1,16 +1,29 @@
-# From somewhere import device_list
+from tree import Node
+from boolexpr import BooleanExpression
+# From somewhere import device_list then comment the line below
 device_list = {}
 
 class Rule():
-    def __init__(self, statements, actions, weight = 1):
+    def __init__(self, rule_dict, actions, weight = 1):
         self.actions = actions
         self.weight = weight
-        self.all_expressions = []
-        for expr in statements["all"]:
-            self.all_expressions.append(BooleanExpression(*expr))
-        self.any_expressions = []
-        for expr in statements["any"]:
-            self.any_expressions.append(BooleanExpression(*expr))
+        self.rule_dict = rule_dict
+        self.root = Node(self.rule_dict["logicalOperator"])
+        for child in self.rule_dict["children"]:
+            self.root.children.append(self.build_tree(self.root, child))
+
+    def build_tree(self,parent_node, child_dict):
+        if "children" not in child_dict["query"]:
+            rule = child_dict["query"]["rule"]
+            operator = child_dict["query"]["operator"]
+            operand = child_dict["query"]["operand"]
+            expr = BooleanExpression(rule, operator, operand)
+            return Node("boolean_expression", parent=parent_node, value=expr)
+        elif "children" in child_dict["query"]:
+            node = Node(child_dict["query"]["logicalOperator"],parent=parent_node)
+            for child in child_dict["children"]:
+                node.children.append(self.build_tree(node, child))
+
 
     def evaluate(self):
         flag1= True

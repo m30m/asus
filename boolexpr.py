@@ -2,9 +2,9 @@ from app import device_ids
 
 
 class BooleanExpression():
-    def __init__(self, rule, operand, operator):
+    def __init__(self, rule, value, operator):
         self.lhs = rule
-        self.rhs = operand
+        self.rhs = value
         self.op = operator
         if rule == 0:
             self.left_value = 0

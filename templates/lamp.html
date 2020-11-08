@@ -44,7 +44,7 @@
           if(this.state < 0) this.state = 0;
 
           if (this.socket) {
-            this.socket.emit('update_state', {state: this.state})
+            this.socket.emit('update_state', {state: this.state/100})
           }
           $('#progressbar').progress({percent: this.state});
         }
@@ -52,21 +52,19 @@
       methods: {
         getText: function () {
           return this.state+"%"
-
         }
-
       },
       created: function () {
-        console.log('Starting connection to WebSocket Server')
+        console.log('Starting connection to WebSocket Server');
         socket = io();
         this.socket = socket;
         let vm = this;
         socket.on('connect', function () {
-          socket.emit('init', { type:'lamp', state: vm.state })
+          socket.emit('init', { type:'lamp', state: vm.state/100 })
         });
         socket.on('act', data => {
           console.log(data);
-          vm.state = data.state
+          vm.state = data.state*100
         });
         $('#progressbar').progress({percent: this.state});
       }

@@ -21,11 +21,12 @@ class Actuator(Device):
                 return
             if (self.range is not None) and (state > self.range[1] or state < self.range[0]):
                 return
+
         elif self.state_type == "discrete" and (state not in self.range):
             return
-        else:
-            self.state = state
-            emit('act', {'state': state}, room=self.device_id)
+
+        self.state = state
+        emit('act', {'state': state}, room=self.device_id)
 
 
 class Lamp(Actuator):

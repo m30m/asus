@@ -8,10 +8,10 @@ Run the project by:
 
 `python app.py`
  
-Now you may go to http://0.0.0.0:5000 in your browser.
+Now you may go to http://0.0.0.0:5000 in your browser
 
 ## Object Entities
-
+In the code we have defined the following Classes.
 ### Device
 Represent a general device, which may be an Actuator or a Sensor. This object entity possesses the following attributes: `device_id`, `state_type` and `value_range`. The `state_type` can be `continuous` or `discrete`. 
 
@@ -35,7 +35,7 @@ Note: All instances of `Sensor` and `Actuator`, namely `Door`, `Lamp`, `Proximit
 
 ## Client/Server communication
 
-### Overal Summary
+### Overall Summary
 
 The clients which correspond to IoT objects, whether actuators or sensors are implemented as web pages, each corresponding to an independent process. For the clients' implementation and the client/server communication, we have used the following libraries: `Vue.js`, `Semantic`, `Flask`, and `Websocket`. 
 
@@ -51,7 +51,7 @@ This object is used for all further server/client interactions and also in the r
 
 Note: the function `init` calls within it the function `update_admin`, which updates the user interface of our server's admin panel with the created device if necessary.
 
-### Updating/Recieving States: 
+### Updating/Receiving States: 
 
 If the value corresponding to the state of a device, whether an actuator or sensor, is changed, an event listener within our clients will trigger the function`update_state` in `app.py`, which applies the corresponding update in the backend appropriately.
 

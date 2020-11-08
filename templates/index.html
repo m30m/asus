@@ -39,6 +39,7 @@
                 <table class="ui celled table">
                     <thead>
                     <th>Device ID</th>
+                    <th>Name</th>
                     <th>Type</th>
                     <th>State</th>
                     </thead>
@@ -46,6 +47,11 @@
                     <tr v-for="item in devices">
                         <td>
                             {{item.id}}
+                        </td>
+                        <td>
+                            <div class="ui input">
+                                <input type="text" @change="update_device_names()" placeholder="Device Name" v-model="device_names[item.id]">
+                            </div>
                         </td>
                         <td>
                             {{item.type}}
@@ -124,7 +130,7 @@
                             <div class="form-group">
                                 <select class="form-control mr-2" v-model="action.device_id">
                                     <option value="" selected>Choose a device</option>
-                                    <option v-for="actuator in actuators" v-bind:value="actuator.id">{{ actuator.id }}
+                                    <option v-for="actuator in actuators" v-bind:value="actuator.id">{{ device_names[actuator.id] }}
                                     </option>
                                 </select>
 
@@ -185,7 +191,8 @@
         current_rule_name: '',
         current_query: {},
         current_rule: null,
-        current_actions: []
+        current_actions: [],
+        device_names: {}
       },
       components: { VueQueryBuilder: window.VueQueryBuilder },
       computed: {
@@ -239,6 +246,9 @@
         update_rules: function () {
           socket.emit('update_rules', this.rules)
         },
+        update_device_names: function () {
+          socket.emit('update_names', this.device_names)
+        },
         delete_rule: function (rule) {
           this.rules.splice(this.rules.indexOf(rule), 1)
           this.update_rules()
@@ -271,6 +281,7 @@
           vm.devices = data.devices
           vm.builder_rules = data.builder_rules
           vm.rules = data.rules
+          vm.device_names = data.device_names
         })
       }
     })

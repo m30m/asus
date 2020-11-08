@@ -1,6 +1,7 @@
 from flask_socketio import emit
 
 from device import Device
+from state import device_names
 
 
 class Actuator(Device):
@@ -15,15 +16,12 @@ class Actuator(Device):
 
     def set_state(self, state):
         if self.state_type == "continuous":
-            try:
-                float(state)
-            except Exception:
-                return
+            state = float(state)
             if (self.range is not None) and (state > self.range[1] or state < self.range[0]):
-                return
+                raise Exception("Invalid value", state)
 
         elif self.state_type == "discrete" and (state not in self.range):
-            return
+            raise Exception("Invalid value", state)
 
         self.state = state
         emit('act', {'state': state}, room=self.device_id)
@@ -38,7 +36,7 @@ class Lamp(Actuator):
     def build_rule(self):
         return {
             'type': 'numeric',
-            'label': 'Lamp #%s' % self.device_id[:4],
+            'label': 'Lamp: %s' % device_names[self.device_id],
             'id': self.device_id,
         }
 
@@ -52,7 +50,7 @@ class Door(Actuator):
     def build_rule(self):
         return {
             'type': 'radio',
-            'label': 'Smart Door #%s' % self.device_id[:4],
+            'label': 'Smart Door: %s' % device_names[self.device_id],
             'id': self.device_id,
             'choices': [{'label': "Is Locked", 'value': False}, {'label': "Is Unlocked", 'value': True}]
         }

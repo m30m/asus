@@ -36,8 +36,7 @@ def door():
     return render_template('door_lock.html')
 
 
-from state import device_ids, rules_given_id
-
+from state import device_ids, rules_given_id, device_names
 rules = []
 
 @socketio.on('admin')
@@ -73,6 +72,7 @@ def init_device(message):
     else:
         raise Exception("Unknown type")
     device_ids[device_id] = device
+    device_names[device_id] = device.type
     update_admin()
 
 
@@ -111,6 +111,12 @@ def update_rules(message):
     update_admin() # to send the new rules status
 
 
+@socketio.on('update_names')
+def update_names(message):
+    global device_names
+    device_names = message
+
+
 def update_admin():
     if app.admin_id is None:
         return
@@ -119,11 +125,10 @@ def update_admin():
                 'is_actuator': isinstance(device, Actuator),
                 'type': device.type
                 } for x, device in device_ids.items()]
-    builder_rules = [
-    ]
+    builder_rules = []
     for device in device_ids.values():
         builder_rules.append(device.build_rule())
-    emit('update', {'devices': devices, 'builder_rules': builder_rules, 'rules': rules}, room=app.admin_id)
+    emit('update', {'devices': devices, 'builder_rules': builder_rules, 'rules': rules, 'device_names': device_names}, room=app.admin_id)
 
 
 if __name__ == '__main__':

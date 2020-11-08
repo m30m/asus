@@ -8,12 +8,19 @@ class Rule(object):
         self.actions = rule_dict["actions"]
         self.weight = weight
         self.rule_dict = rule_dict
+        # List of device ids that appear as an input to this rule
+        self.dependent_devices = []
         self.root = self.build_tree(None,rule_dict)
         print(self.root, "finsihed tree")
-
+        from state import rules_given_id
+        for device_id in self.dependent_devices:
+            if device_id not in rules_given_id:
+                rules_given_id[device_id] = []
+            rules_given_id[device_id].append(self)
     def build_tree(self,parent_node, child_dict):
         if "children" not in child_dict["query"]:
             rule = child_dict["query"]["rule"]
+            self.dependent_devices.append(rule)
             value = child_dict["query"]["value"]
             operator = child_dict["query"].get("selectedOperator", '=')
             expr = BooleanExpression(rule, value, operator)

@@ -1,10 +1,10 @@
-How to run the project:
+## Running the project:
 
-Create a python3 virtual environment
+Create a `python 3` virtual environment.
 
 Install the requirements by `pip install -r requirements`
 
-Run the project:
+Run the project by:
 
 `python app.py`
 
@@ -54,5 +54,8 @@ Note: the function `init` calls within it the function `update_admin` which upda
 If the value corresponding to the state of a device whether an actuator or sensor is changed and event listener within our clients will trigger the function`update_state`in `app.py` which applies the corresponding update in the backend appropirately.
 
 Note: As soon as the state of a device changes we check using our implemented rule engine the rules associated with or including that device and then re-evaluate the rules; firing(executing) the appropirate actions. 
+
+## Rule Engine
+
 
 

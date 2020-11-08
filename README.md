@@ -7,7 +7,8 @@ Install the requirements by `pip install -r requirements`
 Run the project by:
 
 `python app.py`
-
+ 
+Now you may go to http://0.0.0.0:5000 in your browser
 
 ## Object Entities
 

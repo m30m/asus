@@ -2,7 +2,7 @@ from tree import Node
 from boolexpr import BooleanExpression
 # From somewhere import device_list then comment the line below
 
-class Rule():
+class Rule(object):
     def __init__(self, rule_dict, weight = 1):
         # print("andishe recieved the folowing rules", rule_dict)
         self.actions = rule_dict["actions"]
@@ -30,8 +30,10 @@ class Rule():
 
     def evaluate(self):
         return self.root.evaluate()
+
+
     def execute(self):
-        from app import device_ids
+        from state import device_ids
         if self.evaluate():
             for action in self.actions:
                 device = device_ids[action["device_id"]]

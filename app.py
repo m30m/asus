@@ -36,7 +36,7 @@ def door():
     return render_template('door_lock.html')
 
 
-device_ids = {}
+from state import device_ids
 rules = []
 
 @socketio.on('admin')

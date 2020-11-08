@@ -30,7 +30,7 @@
           Change the sensor value:
           <div class="ui hidden divider"></div>
           <div class="ui right labeled input">
-            <input id="distval" type="number" placeholder="Enter distance..">
+            <input :disabled="random" id="distval" type="number" placeholder="Enter distance..">
             <div class="ui basic label">
               m
             </div>
@@ -38,23 +38,28 @@
           <button @click="updateState()" class="ui primary button">
           Save
           </button>
+            <div class="ui toggle checkbox">
+              <input type="checkbox" id="checkbox" v-model="random" name="public">
+              <label>Random</label>
+            </div>
         </div>
       </div>
     </div>
   </div>
 
 
-  <script type="text/javascript" charset="utf-8">
+    <script type="text/javascript" charset="utf-8">
     var app = new Vue({
       el: '#app',
       data: {
         state: 120,
+        random: false,
         socket: null
       },
       watch: {
         state: function () {
           if (this.socket) {
-            this.socket.emit('update_state', {state: this.state})
+            this.socket.emit('update_state', { state: this.state })
           }
         }
       },
@@ -63,8 +68,8 @@
           if (this.state) return 'suspicious noise detected'
           return 'no suspicious noise'
         },
-        updateState: function() {
-          this.state = parseInt($("#distval").val())
+        updateState: function () {
+          this.state = parseInt($('#distval').val())
         }
       },
       created: function () {
@@ -73,14 +78,29 @@
         this.socket = socket
         let vm = this
         socket.on('connect', function () {
-          socket.emit('init', { type:'proximity', state: vm.state })
-        });
+          socket.emit('init', { type: 'proximity', state: vm.state })
+        })
         socket.on('act', data => {
           console.log(data)
           vm.state = data.state
         })
+
+        function doSomething () {
+          if (vm.random) {
+            vm.state = Math.round(Math.random() * 120)
+          }
+        }
+
+        (function loop () {
+          var rand = Math.round(Math.random() * (3000 - 500)) + 500
+          setTimeout(function () {
+            doSomething()
+            loop()
+          }, rand)
+        }())
+
       }
     })
-  </script>
-  {% endraw %}
+    </script>
+    {% endraw %}
 {% endblock %}

@@ -55,6 +55,12 @@ If the value corresponding to the state of a device whether an actuator or senso
 
 Note: As soon as the state of a device changes we check using our implemented rule engine the rules associated with or including that device and then re-evaluate the rules; firing(executing) the appropirate actions. 
 
+### Automatic Sensor Streaming Inputs
+
+We allow the user to choose whether they want to enter the sensory inputs manualy on the sensor's corresponding web page, or they want the sensory input to switch to a valid state in randomly chosen time intervals to appropirately test for the robustness of the implemented rules and system performance. 
+
+This is implemented in the user interface of all web pages corresponding to sensors, and is as simple as a click for the user/tester.
+
 ## Rule Engine
 
 

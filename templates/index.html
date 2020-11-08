@@ -8,6 +8,7 @@
 />
 {% endblock %}
 {% block body %}{% raw %}
+
 <div id="app">
   <h1 class="ui center aligned header">Admin Control Panel</h1>
   <h2 class="ui center aligned header">Create a Device</h2>
@@ -49,49 +50,42 @@
       </table>
     </div>
 
-
-    <!--        <h2>Device State</h2>-->
-    <!--        <ul id="example-1">-->
-    <!--            <li v-for="item in devices">-->
-    <!--                {{ item.id }}:-->
-    <!--                <div class="ui toggle checkbox">-->
-    <!--                  <label>{{item.state}}</label>-->
-    <!--                    <input type="checkbox" v-model="item.state" name="public"-->
-    <!--                           @change="send_state(item.id,item.state)"><label></label>-->
-    <!--                </div>-->
-    <!--            </li>-->
-    <!--        </ul>-->
-
-    Current rules:
-    <ul>
-      <li v-for="rule in rules">
-        {{ rule.name }} : <input type="button" @click="edit_rule(rule)" value="Edit"/>
-        <input type="button" @click="delete_rule(rule)" value="Delete"/>
-      </li>
-      <li><input type="button" @click="add_rule" value="Add new rule"/></li>
-    </ul>
-    <div :class="{hidden:!builder_state}" v-if="builder_state">
-      <input type="text" placeholder="Rule Name" v-model="current_rule_name"/>
-      <vue-query-builder :rules="builder_rules" v-model="current_query"></vue-query-builder>
-      <br/>
-      Actions:
-      <br/>
-      <div v-for="action in current_actions">
-        Device:
-        <select v-model="action.device_id">
-          <option v-for="actuator in actuators" v-bind:value="actuator.id">{{ actuator.id }}</option>
-        </select>
-        Value:
-        <select v-model="action.value">
-          <option value="false">Lock door</option>
-          <option value="true">Unlock door</option>
-        </select>
-        <input type="button" @click="current_actions.splice(current_actions.indexOf(action),1)" value="Delete"/>
-      </div>
-      <input @click="current_actions.push({device_id:null,value:null})" type="button" value="Add action"/>
-      <input type="button" @click="save_rule" value="Save rule"/>
-    </div>
+    </tbody>
+    </table>
   </div>
+
+  Current rules:
+  <ul>
+    <li v-for="rule in rules">
+      {{ rule.name }} : <input type="button" @click="edit_rule(rule)" value="Edit"/>
+      <input type="button" @click="delete_rule(rule)" value="Delete"/>
+    </li>
+    <li><input type="button" @click="add_rule" value="Add new rule"/></li>
+  </ul>
+  <div :class="{hidden:!builder_state}" v-if="builder_state">
+    <input type="text" placeholder="Rule Name" v-model="current_rule_name"/>
+    <vue-query-builder :rules="builder_rules" v-model="current_query"></vue-query-builder>
+    <br/>
+    Actions:
+    <br/>
+    <div v-for="action in current_actions">
+      Device:
+      <select v-model="action.device_id">
+        <option v-for="actuator in actuators" v-bind:value="actuator.id">{{ actuator.id }}</option>
+      </select>
+
+      <select v-if="action.device_id" v-model="action.value">
+        <option v-for="act in get_actions(action.device_id)" v-bind:value="act.value">{{ act.label }}
+        </option>
+      </select>
+      <input type="button" @click="current_actions.splice(current_actions.indexOf(action),1)" value="Delete"/>
+    </div>
+    <input @click="current_actions.push({device_id:null,value:null})" type="button" value="Add action"/>
+    <input type="button" @click="save_rule" value="Save rule"/>
+  </div>
+</div>
+
+</div>
 </div>
 <script type="text/javascript" charset="utf-8">
   var app = new Vue({
@@ -100,7 +94,7 @@
       types: ['lamp', 'door', 'motion', 'noise', 'proximity'],
       icons: ["huge lightbulb outline icon", "huge angle double right icon", "huge play icon", "huge volume up icon", "huge map marker alternate icon"],
       descriptions: ["create a smart lamp with brightness value between 0% and 100%",
-      "create a smart door lock",
+        "create a smart door lock",
         "create a motion sensor that detects whether something is moving in a certain area",
         "create a smart microphone that detects suspicious noises such as broken glass, screams, gun shots",
         "create a proximity sensor that measures distance between a beacon and a receiver in meters"
@@ -124,9 +118,6 @@
       }
     },
     methods: {
-      create_image_url: function (type) {
-        return "/static/images/" + type + ".jpg";
-      },
       create_url: function (type) {
         return "/" + type;
       },
@@ -166,6 +157,20 @@
       delete_rule: function (rule) {
         this.rules.splice(this.rules.indexOf(rule), 1)
         socket.emit('update_rules', this.rules)
+      },
+      get_type: function (device_id) {
+        for (var device of this.devices)
+          if (device.id === device_id)
+            return device.type
+      },
+      get_actions: function (device_id) {
+        let type = this.get_type(device_id)
+        if (type === 'door') {
+          return [{'value': false, 'label': 'Lock Door'}, {'value': true, 'label': 'Unlock Door'}]
+        }
+        if (type === 'lamp') {
+          return [{'value': false, 'label': 'Turn Off'}, {'value': true, 'label': 'Turn On'}]
+        }
       }
     },
     created: function () {
@@ -187,4 +192,3 @@
 </script>
 {% endraw %}
 {% endblock %}
-

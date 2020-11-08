@@ -36,7 +36,7 @@ def door():
     return render_template('door_lock.html')
 
 
-device_ids = {}
+from state import device_ids
 rules = []
 
 @socketio.on('admin')
@@ -57,18 +57,21 @@ def handle_act(message):
 def init_device(message):
     device_id = request.sid
     if message['type'] == 'door':
-        device_ids[device_id] = Door(device_id, message['state'])
-    if message['type'] == 'lamp':
-        device_ids[device_id] = Lamp(device_id, message['state'])
-    if message['type'] == 'motion':
-        device_ids[device_id] = Motion(device_id)
-        device_ids[device_id].receive_state(message['state'])
-    if message['type'] == 'noise':
-        device_ids[device_id] = Noise(device_id)
-        device_ids[device_id].receive_state(message['state'])
-    if message['type'] == 'proximity':
-        device_ids[device_id] = Proximity(device_id)
-        device_ids[device_id].receive_state(message['state'])
+        device = Door(device_id, message['state'])
+    elif message['type'] == 'lamp':
+        device = Lamp(device_id, message['state'])
+    elif message['type'] == 'motion':
+        device = Motion(device_id)
+        device.receive_state(message['state'])
+    elif message['type'] == 'noise':
+        device = Noise(device_id)
+        device.receive_state(message['state'])
+    elif message['type'] == 'proximity':
+        device = Proximity(device_id)
+        device.receive_state(message['state'])
+    else:
+        raise Exception("Unknown type")
+    device_ids[device_id] = device
     update_admin()
 
 
@@ -94,6 +97,7 @@ def update_rules(message):
         rule = Rule(r)
         print(rule.root)
         print(rule.evaluate())
+        rule.execute()
     print('updating rules')
     print(rules)
 
@@ -101,19 +105,15 @@ def update_rules(message):
 def update_admin():
     if app.admin_id is None:
         return
-    devices = [{'id': x, 'state': device.get_state(), 'is_actuator': isinstance(device, Actuator)} for x, device in
-               device_ids.items()]
+    devices = [{'id': x,
+                'state': device.get_state(),
+                'is_actuator': isinstance(device, Actuator),
+                'type': device.type
+                } for x, device in device_ids.items()]
     builder_rules = [
     ]
-    for device in devices:
-        builder_rules.append(
-            {
-                'type': 'radio',
-                'label': 'Smart Door #%s' % device['id'][:4],
-                'id': device['id'],
-                'choices': [{'label': "Locked", 'value': False}, {'label': "Unlocked", 'value': True}]
-            }
-        )
+    for device in device_ids.values():
+        builder_rules.append(device.build_rule())
     emit('update', {'devices': devices, 'builder_rules': builder_rules, 'rules': rules}, room=app.admin_id)
 
 

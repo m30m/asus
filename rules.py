@@ -1,25 +1,28 @@
 from tree import Node
 from boolexpr import BooleanExpression
 # From somewhere import device_list then comment the line below
-device_list = {}
 
-class Rule():
-    def __init__(self, rule_dict, actions=None, weight = 1):
-        self.actions = actions
+class Rule(object):
+    def __init__(self, rule_dict, weight = 1):
+        # print("andishe recieved the folowing rules", rule_dict)
+        self.actions = rule_dict["actions"]
         self.weight = weight
         self.rule_dict = rule_dict
-        self.root = Node(self.rule_dict["logicalOperator"])
-        for child in self.rule_dict["children"]:
-            self.root.children.append(self.build_tree(self.root, child))
-
+        # List of device ids that appear as an input to this rule
+        self.dependent_devices = []
+        self.root = self.build_tree(None,rule_dict)
+        print(self.root, "finsihed tree")
+        from state import rules_given_id
+        for device_id in self.dependent_devices:
+            if device_id not in rules_given_id:
+                rules_given_id[device_id] = []
+            rules_given_id[device_id].append(self)
     def build_tree(self,parent_node, child_dict):
         if "children" not in child_dict["query"]:
             rule = child_dict["query"]["rule"]
+            self.dependent_devices.append(rule)
             value = child_dict["query"]["value"]
-            try:
-                operator = child_dict["query"]["operator"]
-            except KeyError:
-                operator = "="
+            operator = child_dict["query"].get("selectedOperator", '=')
             expr = BooleanExpression(rule, value, operator)
             return Node("boolean_expression", parent=parent_node, value=expr)
         elif "children" in child_dict["query"]:
@@ -31,11 +34,14 @@ class Rule():
 
     def evaluate(self):
         return self.root.evaluate()
+
+
     def execute(self):
+        from state import device_ids
         if self.evaluate():
-            for action in self.actions.values():
-                device = device_list[action["id"]]
-                device.set_state(action["set_value"])
+            for action in self.actions:
+                device = device_ids[action["device_id"]]
+                device.set_state(action["value"])
 """
 class BooleanExpression():
     def __init__(self, lhs, rhs, op):

@@ -16,8 +16,12 @@
     <div class="ui container">
       <div class="ui one column stackable center aligned page padded grid">
         <div class="ui toggle checkbox">
-          <input type="checkbox" id="checkbox" v-model="state" name="public">
+          <input :disabled="random" type="checkbox" id="checkbox" v-model="state" name="public">
           <label>{{ getText() }}</label>
+        </div>
+        <div class="ui toggle checkbox">
+          <input type="checkbox" id="checkbox" v-model="random" name="public">
+          <label>Random</label>
         </div>
       </div>
     </div>
@@ -29,6 +33,7 @@
       el: '#app',
       data: {
         state: true,
+        random:false,
         socket: null
       },
       watch: {
@@ -56,6 +61,19 @@
           console.log(data)
           vm.state = data.state
         })
+        function doSomething () {
+          if (vm.random) {
+            vm.state = Math.random() > 0.5
+          }
+        }
+
+        (function loop () {
+          var rand = Math.round(Math.random() * (3000 - 500)) + 500
+          setTimeout(function () {
+            doSomething()
+            loop()
+          }, rand)
+        }())
       }
     })
   </script>

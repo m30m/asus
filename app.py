@@ -98,8 +98,10 @@ def update_rules(message):
         print(rule.root)
         print(rule.evaluate())
         rule.execute()
+        r['status'] = rule.evaluate()
     print('updating rules')
     print(rules)
+    update_admin() # to send the new rules status
 
 
 def update_admin():

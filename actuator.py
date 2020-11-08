@@ -37,10 +37,9 @@ class Lamp(Actuator):
 
     def build_rule(self):
         return {
-            'type': 'radio',
+            'type': 'numeric',
             'label': 'Lamp #%s' % self.device_id[:4],
             'id': self.device_id,
-            'choices': [{'label': "Is Off", 'value': False}, {'label': "Is On", 'value': True}]
         }
 
 

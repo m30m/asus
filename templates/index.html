@@ -78,12 +78,18 @@
                     </thead>
                     <tbody>
                     <tr v-for="rule in rules">
-                        <td></td>
                         <td>
-                            {{rule.name}}
+                            <div class="ui toggle checkbox">
+                                <input @change="update_rules()" type="checkbox" id="checkbox" v-model="rule.enabled"
+                                       name="public">
+                                <label></label>
+                            </div>
                         </td>
                         <td>
-                            status
+                            {{ rule.name }}
+                        </td>
+                        <td>
+                            {{ rule.status }}
                         </td>
                         <td>
                             <button class="ui labeled icon button" @click="edit_rule(rule)">
@@ -122,12 +128,18 @@
                                     </option>
                                 </select>
 
-                                <select class="form-control mr-2" v-if="action.device_id" v-model="action.value">
+                                <select class="form-control mr-2"
+                                        v-if="action.device_id && get_type(action.device_id)=='door'"
+                                        v-model="action.value">
                                     <option v-for="act in get_actions(action.device_id)" v-bind:value="act.value">{{
                                         act.label
                                         }}
                                     </option>
                                 </select>
+                                <div class="ui input" v-if="action.device_id && get_type(action.device_id)=='lamp'">
+                                    <input type="text" placeholder="Lamp Value" v-model="action.value" type="number"
+                                           min="0" max="1">
+                                </div>
 
                                 <input type="button" @click="current_actions.splice(current_actions.indexOf(action),1)"
                                        class="btn btn-secondary" value="Delete"/>
@@ -213,7 +225,8 @@
             this.rules.push({
               'name': this.current_rule_name,
               'query': this.current_query,
-              'actions': this.current_actions
+              'actions': this.current_actions,
+              'enabled': true
             })
           } else {
             this.current_rule.query = this.current_query
@@ -221,11 +234,14 @@
             this.current_rule.actions = this.current_actions
           }
           this.builder_state = false
+          this.update_rules()
+        },
+        update_rules: function () {
           socket.emit('update_rules', this.rules)
         },
         delete_rule: function (rule) {
           this.rules.splice(this.rules.indexOf(rule), 1)
-          socket.emit('update_rules', this.rules)
+          this.update_rules()
         },
         get_type: function (device_id) {
           for (var device of this.devices)

@@ -61,7 +61,7 @@
           console.log(data)
           vm.state = data.state
         })
-        function doSomething () {
+        function changeState () {
           if (vm.random) {
             vm.state = Math.random() > 0.5
           }
@@ -70,7 +70,7 @@
         (function loop () {
           var rand = Math.round(Math.random() * (3000 - 500)) + 500
           setTimeout(function () {
-            doSomething()
+            changeState()
             loop()
           }, rand)
         }())

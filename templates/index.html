@@ -11,37 +11,43 @@
 <div id="app">
   <h1 class="ui center aligned header">Admin Control Panel</h1>
   <h2 class="ui center aligned header">Create a Device</h2>
-  <div class="ui container">
-    <div class="ui segments">
-      <div class="ui segment"><a href="/lamp" target="_blank">Create a lamp</a></div>
-      <div class="ui segment"><a href="/door" target="_blank">Create a door</a></div>
-      <div class="ui segment"><a href="/motion" target="_blank">Create a motion sensor</a></div>
-      <div class="ui segment"><a href="/noise" target="_blank">Create a noise sensor</a></div>
-      <div class="ui segment"><a href="/proximity" target="_blank">Create a proximity sensor</a></div>
+  <div class="ui center aligned container">
+    <div class="ui link cards">
+      <div v-for="(type, index) in types" class="ui card">
+        <i :class="icons[index]"></i>
+
+        <div class="content">
+          <a :href="create_url(type)" class="header">Create a {{ type }} device</a>
+
+          <div class="description">
+            {{ descriptions[index] }}
+          </div>
+        </div>
+      </div>
+
     </div>
-  </div>
 
-  <h2 class="ui center aligned header">State of Devices</h2>
-  <div class="ui container">
-    <table class="ui celled table">
-      <thead>
-      <th>Device ID</th>
-      <th>State</th>
-      </thead>
-      <tbody>
-      <tr v-for="item in devices">
-        <td>
-          {{item.id}}
-        </td>
-        <td>
-          {{item.state}}
-        </td>
+    <h2 class="ui center aligned header">State of Devices</h2>
+    <div class="ui container">
+      <table class="ui celled table">
+        <thead>
+        <th>Device ID</th>
+        <th>State</th>
+        </thead>
+        <tbody>
+        <tr v-for="item in devices">
+          <td>
+            {{item.id}}
+          </td>
+          <td>
+            {{item.state}}
+          </td>
 
-      </tr>
+        </tr>
 
-      </tbody>
-    </table>
-  </div>
+        </tbody>
+      </table>
+    </div>
 
 
     <!--        <h2>Device State</h2>-->
@@ -86,84 +92,99 @@
       <input type="button" @click="save_rule" value="Save rule"/>
     </div>
   </div>
-  <script type="text/javascript" charset="utf-8">
-    var app = new Vue({
-      el: '#app',
-      data: {
-        devices: [],
-        socket: null,
-        builder_rules: [],
-        rules: [],
-        builder_state: false,
-        current_rule_name: '',
-        current_query: {},
-        current_rule: null,
-        current_actions: []
-      },
-      components: {VueQueryBuilder: window.VueQueryBuilder},
-      computed: {
-        actuators: function () {
-          return this.devices.filter(function (device) {
-            return device.is_actuator
-          })
-        }
-      },
-      methods: {
-        send_state: function (device_id, state) {
-          socket.emit('act', {device_id: device_id, state: state})
-        },
-        add_rule: function () {
-          this.current_query = {}
-          this.current_rule_name = ''
-          this.current_rule = null
-          this.current_actions = []
-          this.builder_state = true
-        },
-        edit_rule: function (rule) {
-          this.current_rule = rule
-          this.builder_state = true
-          this.current_query = rule.query
-          this.current_rule_name = rule.name
-          this.current_actions = rule.actions
-        },
-        save_rule: function () {
-          console.log(this.current_query)
-          if (this.current_rule == null) {
-            this.rules.push({
-              'name': this.current_rule_name,
-              'query': this.current_query,
-              'actions': this.current_actions
-            })
-          } else {
-            this.current_rule.query = this.current_query
-            this.current_rule.name = this.current_rule_name
-            this.current_rule.actions = this.current_actions
-          }
-          this.builder_state = false
-          socket.emit('update_rules', this.rules)
-        },
-        delete_rule: function (rule) {
-          this.rules.splice(this.rules.indexOf(rule), 1)
-          socket.emit('update_rules', this.rules)
-        }
-      },
-      created: function () {
-        console.log('Starting connection to WebSocket Server')
-        socket = io()
-        this.socket = socket
-        let vm = this
-        socket.on('connect', function () {
-          socket.emit('admin', {})
-        })
-        socket.on('update', data => {
-          console.log(data)
-          vm.devices = data.devices
-          vm.builder_rules = data.builder_rules
-          vm.rules = data.rules
+</div>
+<script type="text/javascript" charset="utf-8">
+  var app = new Vue({
+    el: '#app',
+    data: {
+      types: ['lamp', 'door', 'motion', 'noise', 'proximity'],
+      icons: ["huge lightbulb outline icon", "huge angle double right icon", "huge play icon", "huge volume up icon", "huge map marker alternate icon"],
+      descriptions: ["create a smart lamp with brightness value between 0% and 100%",
+      "create a smart door lock",
+        "create a motion sensor that detects whether something is moving in a certain area",
+        "create a smart microphone that detects suspicious noises such as broken glass, screams, gun shots",
+        "create a proximity sensor that measures distance between a beacon and a receiver in meters"
+      ],
+      devices: [],
+      socket: null,
+      builder_rules: [],
+      rules: [],
+      builder_state: false,
+      current_rule_name: '',
+      current_query: {},
+      current_rule: null,
+      current_actions: []
+    },
+    components: {VueQueryBuilder: window.VueQueryBuilder},
+    computed: {
+      actuators: function () {
+        return this.devices.filter(function (device) {
+          return device.is_actuator
         })
       }
-    })
-  </script>
-  {% endraw %}
-  {% endblock %}
+    },
+    methods: {
+      create_image_url: function (type) {
+        return "/static/images/" + type + ".jpg";
+      },
+      create_url: function (type) {
+        return "/" + type;
+      },
+      send_state: function (device_id, state) {
+        socket.emit('act', {device_id: device_id, state: state})
+      },
+      add_rule: function () {
+        this.current_query = {}
+        this.current_rule_name = ''
+        this.current_rule = null
+        this.current_actions = []
+        this.builder_state = true
+      },
+      edit_rule: function (rule) {
+        this.current_rule = rule
+        this.builder_state = true
+        this.current_query = rule.query
+        this.current_rule_name = rule.name
+        this.current_actions = rule.actions
+      },
+      save_rule: function () {
+        console.log(this.current_query)
+        if (this.current_rule == null) {
+          this.rules.push({
+            'name': this.current_rule_name,
+            'query': this.current_query,
+            'actions': this.current_actions
+          })
+        } else {
+          this.current_rule.query = this.current_query
+          this.current_rule.name = this.current_rule_name
+          this.current_rule.actions = this.current_actions
+        }
+        this.builder_state = false
+        socket.emit('update_rules', this.rules)
+      },
+      delete_rule: function (rule) {
+        this.rules.splice(this.rules.indexOf(rule), 1)
+        socket.emit('update_rules', this.rules)
+      }
+    },
+    created: function () {
+      console.log('Starting connection to WebSocket Server')
+      socket = io()
+      this.socket = socket
+      let vm = this
+      socket.on('connect', function () {
+        socket.emit('admin', {})
+      })
+      socket.on('update', data => {
+        console.log(data)
+        vm.devices = data.devices
+        vm.builder_rules = data.builder_rules
+        vm.rules = data.rules
+      })
+    }
+  })
+</script>
+{% endraw %}
+{% endblock %}
 

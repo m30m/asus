@@ -72,6 +72,7 @@ def init_device(message):
     else:
         raise Exception("Unknown type")
     device_ids[device_id] = device
+    global device_names
     device_names[device_id] = device.type
     update_admin()
 
@@ -122,6 +123,7 @@ def update_admin():
         return
     devices = [{'id': x,
                 'state': device.get_state(),
+                'state_label': device.get_state_label(),
                 'is_actuator': isinstance(device, Actuator),
                 'type': device.type
                 } for x, device in device_ids.items()]

@@ -40,6 +40,9 @@ class Lamp(Actuator):
             'id': self.device_id,
         }
 
+    def get_state_label(self):
+        return 'Brightness: %s' % self.get_state()
+
 
 class Door(Actuator):
     type = 'door'
@@ -54,3 +57,9 @@ class Door(Actuator):
             'id': self.device_id,
             'choices': [{'label': "Is Locked", 'value': False}, {'label': "Is Unlocked", 'value': True}]
         }
+
+    def get_state_label(self):
+        if self.get_state():
+            return 'Unlocked'
+        else:
+            return 'Locked'

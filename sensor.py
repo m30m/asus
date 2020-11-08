@@ -9,6 +9,9 @@ class Sensor(Device):
     def get_state(self):
         return self.state
 
+    def get_state_label(self):
+        raise NotImplemented
+
     def receive_state(self, state):
         self.state = state
 
@@ -27,6 +30,12 @@ class Motion(Sensor):
             'choices': [{'label': "No Motion", 'value': False}, {'label': "Motion detected", 'value': True}]
         }
 
+    def get_state_label(self):
+        if self.get_state():
+            return 'Motion Detected'
+        else:
+            return 'No Motion'
+
 
 class Noise(Sensor):
     type = 'noise'
@@ -43,6 +52,12 @@ class Noise(Sensor):
                         {'label': "Suspicious Noise Detected", 'value': True}]
         }
 
+    def get_state_label(self):
+        if self.get_state():
+            return 'Suspicious Noise Detected'
+        else:
+            return 'No Suspicious Noise'
+
 
 class Proximity(Sensor):
     type = 'proximity'
@@ -56,3 +71,6 @@ class Proximity(Sensor):
             'label': 'Prxomity Sensor: %s' % device_names[self.device_id],
             'id': self.device_id,
         }
+
+    def get_state_label(self):
+        return 'Proximity: %s' % self.get_state()

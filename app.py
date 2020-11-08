@@ -46,13 +46,6 @@ def handle_admin(message):
     update_admin()
 
 
-@socketio.on('act')
-def handle_act(message):
-    device_id = message['device_id']
-    state = message['state']
-    emit('act', {'state': state}, room=device_id)
-
-
 @socketio.on('init')
 def init_device(message):
     device_id = request.sid
@@ -106,7 +99,6 @@ def update_rules(message):
         print(rule.root)
         print(rule.evaluate())
         rule.execute()
-        r['status'] = rule.evaluate()
     print('updating rules')
     print(rules)
     update_admin() # to send the new rules status
@@ -131,6 +123,8 @@ def update_admin():
     for device in device_ids.values():
         builder_rules.append(device.build_rule())
     from state import device_names
+    for r in rules:
+        r['status'] = Rule(r).evaluate()
     for admin_id in app.admin_id:
         emit('update',
              {'devices': devices, 'builder_rules': builder_rules, 'rules': rules, 'device_names': device_names},

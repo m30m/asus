@@ -31,7 +31,9 @@ This class inherits the device and most notably implements the function `recieve
 
 `Proximity`, `Noise`, and `Motion` are entities inheriting `Sensor` representing the sensors defined in the project.
 
-Note: All instances of `Sensor` and `Actuator`, namely `Door`, `Lamp`, `Proximity`, `Noise`, and `Motion` implement a `build_rule` function which specifies for our front end and rule engine the representation rules for these entities.
+Note: All instances of `Sensor` and `Actuator`, namely `Door`, `Lamp`, `Proximity`, `Noise`, `Motion` and `Face` implement a `build_rule` function which specifies for our front end and rule engine the representation rules for these entities.
+
+Note: `Face` sensor is an extension of the main proposal of system. It can detect emotions of a person and send the amount of happiness(!) of the person to the server!
 
 ## Client/Server communication
 

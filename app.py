@@ -97,6 +97,7 @@ def update_rules(message):
         rule = Rule(r)
         print(rule.root)
         print(rule.evaluate())
+        rule.execute()
     print('updating rules')
     print(rules)
 

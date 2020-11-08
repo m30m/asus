@@ -1,3 +1,5 @@
+from flask_socketio import emit
+
 from device import Device
 
 
@@ -23,6 +25,7 @@ class Actuator(Device):
             return
         else:
             self.state = state
+            emit('act', {'state': state}, room=self.device_id)
 
 
 class Lamp(Actuator):

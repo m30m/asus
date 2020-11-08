@@ -15,10 +15,7 @@ class Rule(object):
         if "children" not in child_dict["query"]:
             rule = child_dict["query"]["rule"]
             value = child_dict["query"]["value"]
-            try:
-                operator = child_dict["query"]["operator"]
-            except KeyError:
-                operator = "="
+            operator = child_dict["query"].get("selectedOperator", '=')
             expr = BooleanExpression(rule, value, operator)
             return Node("boolean_expression", parent=parent_node, value=expr)
         elif "children" in child_dict["query"]:

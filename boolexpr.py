@@ -2,6 +2,8 @@ class BooleanExpression():
     def __init__(self, rule, value, operator):
         self.rule = rule
         self.op = operator
+        if not isinstance(value, bool):
+            value = float(value)
         self.rhs = value
 
     def __str__(self):

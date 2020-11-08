@@ -8,10 +8,10 @@ Run the project by:
 
 `python app.py`
  
-Now you may go to http://0.0.0.0:5000 in your browser
+Now you may go to http://0.0.0.0:5000 in your browser.
 
 ## Object Entities
-In the code we have defined the following Classes.
+In the code, we have defined the following Classes.
 ### Device
 Represent a general device, which may be an Actuator or a Sensor. This object entity possesses the following attributes: `device_id`, `state_type` and `value_range`. The `state_type` can be `continuous` or `discrete`. 
 

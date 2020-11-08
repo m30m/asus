@@ -77,3 +77,9 @@ Note: The boolean expressions are evaluated using the `BooleanExpression` class 
 
 When a new rule is specified in the admin panel, the `update_rules` function is triggered in `app.py`, which will add the rule to the set of existing ones and checks which devices, whether sensor or actuators, are involved. This comes in handy when the state of actuators/sensors change, and the re-evaluation of the rule is necessary. Read the note on Update/Receiving States for more information.
 
+
+## Happy Face Sensor: A Special/Funny Feature
+
+We implement a sensor that uses a light-weight machine learning model to detect how happy a face is. By sending this happiness value from the frontend to the backend, we can incorporate this sensor into our system, including the user-defined rules. 
+
+In a video presentation, we showcase an example of this. This feature demonstrates our approach and system architecture's capability to handle higher-level and resource-wise, more demanding sensory inputs with ease.

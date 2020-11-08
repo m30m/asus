@@ -5,10 +5,11 @@ from boolexpr import BooleanExpression
 # From somewhere import device_list then comment the line below
 
 class Rule(object):
-  def __init__(self, rule_dict, weight=1):
+  def __init__(self, rule_dict, weight=1, enabled=True):
     # print("andishe recieved the folowing rules", rule_dict)
     self.actions = rule_dict["actions"]
     self.weight = weight
+    self.enabled = enabled
     self.rule_dict = rule_dict
     # List of device ids that appear as an input to this rule
     self.dependent_devices = []
@@ -42,7 +43,7 @@ class Rule(object):
 
   def execute(self):
     from state import device_ids
-    if self.evaluate():
+    if self.enabled and self.evaluate():
       for action in self.actions:
         device = device_ids[action["device_id"]]
         device.set_state(action["value"])

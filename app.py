@@ -5,10 +5,10 @@ from flask_socketio import SocketIO, send, emit
 
 from actuator import Door, Lamp, Actuator
 from rules import Rule
-from sensor import Sensor, Motion, Noise, Proximity
+from sensor import Sensor, Motion, Noise, Proximity, HappyFace
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 @app.route('/')
@@ -66,6 +66,9 @@ def init_device(message):
     elif message['type'] == 'proximity':
         device = Proximity(device_id)
         device.receive_state(message['state'])
+    elif message['type'] == 'face':
+        device = HappyFace(device_id)
+        device.receive_state(message['state'])
     else:
         raise Exception("Unknown type")
     device_ids[device_id] = device
@@ -99,7 +102,7 @@ def update_rules(message):
     print("update rules given id {}".format(rules_given_id))
     for r in rules:
         print(r)
-        rule = Rule(r)
+        rule = Rule(r, enabled=r['enabled'])
         print(rule.root)
         print(rule.evaluate())
         rule.execute()
@@ -128,7 +131,7 @@ def update_admin():
         builder_rules.append(device.build_rule())
     from state import device_names
     for r in rules:
-        r['status'] = Rule(r).evaluate()
+        r['status'] = Rule(r, enabled=r['enabled']).evaluate()
     for admin_id in app.admin_id:
         emit('update',
              {'devices': devices, 'builder_rules': builder_rules, 'rules': rules, 'device_names': device_names},

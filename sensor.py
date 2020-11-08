@@ -75,3 +75,21 @@ class Proximity(Sensor):
     def get_state_label(self):
         return 'Proximity: %s' % self.get_state()
 
+
+
+class HappyFace(Sensor):
+    type = 'face'
+
+    def __init__(self, sensor_id):
+        super().__init__(sensor_id, "continuous", None)
+
+    def build_rule(self):
+        return {
+            'type': 'numeric',
+            'label': 'HappyFace Sensor: %s' % device_names.get(self.device_id, self.type),
+            'id': self.device_id,
+        }
+
+    def get_state_label(self):
+        return 'Happiness: %.2f' % self.get_state()
+

@@ -183,13 +183,14 @@
     var app = new Vue({
       el: '#app',
       data: {
-        types: ['lamp', 'door', 'motion', 'noise', 'proximity'],
-        icons: ['huge lightbulb outline icon', 'huge angle double right icon', 'huge play icon', 'huge volume up icon', 'huge map marker alternate icon'],
+        types: ['lamp', 'door', 'motion', 'noise', 'proximity', 'face'],
+        icons: ['huge lightbulb outline icon', 'huge angle double right icon', 'huge play icon', 'huge volume up icon', 'huge map marker alternate icon', 'huge user icon'],
         descriptions: ['create a smart lamp with brightness value between 0% and 100%',
           'create a smart door lock',
           'create a motion sensor that detects whether something is moving in a certain area',
           'create a smart microphone that detects suspicious noises such as broken glass, screams, gun shots',
-          'create a proximity sensor that measures distance between a beacon and a receiver in meters'
+          'create a proximity sensor that measures distance between a beacon and a receiver in meters',
+          'create a face recognition sensor!'
         ],
         devices: [],
         socket: null,

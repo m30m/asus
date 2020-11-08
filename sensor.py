@@ -74,3 +74,4 @@ class Proximity(Sensor):
 
     def get_state_label(self):
         return 'Proximity: %s' % self.get_state()
+

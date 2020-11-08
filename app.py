@@ -15,6 +15,10 @@ socketio = SocketIO(app)
 def main():
     return render_template('index.html')
 
+@app.route('/face')
+def face():
+    return render_template('face.html')
+
 @app.route('/proximity')
 def proximity():
     return render_template('proximity.html')

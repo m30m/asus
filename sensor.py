@@ -25,7 +25,7 @@ class Motion(Sensor):
     def build_rule(self):
         return {
             'type': 'radio',
-            'label': 'Motion Sensor: %s' % device_names[self.device_id],
+            'label': 'Motion Sensor: %s' % device_names.get(self.device_id, self.type),
             'id': self.device_id,
             'choices': [{'label': "No Motion", 'value': False}, {'label': "Motion detected", 'value': True}]
         }
@@ -46,7 +46,7 @@ class Noise(Sensor):
     def build_rule(self):
         return {
             'type': 'radio',
-            'label': 'Noise Sensor: %s' % device_names[self.device_id],
+            'label': 'Noise Sensor: %s' % device_names.get(self.device_id, self.type),
             'id': self.device_id,
             'choices': [{'label': "No Suspicious Noise", 'value': False},
                         {'label': "Suspicious Noise Detected", 'value': True}]
@@ -68,7 +68,7 @@ class Proximity(Sensor):
     def build_rule(self):
         return {
             'type': 'numeric',
-            'label': 'Prxomity Sensor: %s' % device_names[self.device_id],
+            'label': 'Prxomity Sensor: %s' % device_names.get(self.device_id, self.type),
             'id': self.device_id,
         }
 

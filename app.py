@@ -36,13 +36,13 @@ def door():
     return render_template('door_lock.html')
 
 
-from state import device_ids, rules_given_id, device_names
+from state import device_ids, rules_given_id
 rules = []
 
 @socketio.on('admin')
 def handle_admin(message):
     print("%s connected" % (request.sid))
-    app.admin_id = request.sid
+    app.admin_id.append(request.sid)
     update_admin()
 
 
@@ -72,7 +72,7 @@ def init_device(message):
     else:
         raise Exception("Unknown type")
     device_ids[device_id] = device
-    global device_names
+    from state import device_names
     device_names[device_id] = device.type
     update_admin()
 
@@ -114,13 +114,13 @@ def update_rules(message):
 
 @socketio.on('update_names')
 def update_names(message):
-    global device_names
-    device_names = message
+    from state import device_names
+    for k, v in message.items():
+        device_names[k] = v
+    update_admin()
 
 
 def update_admin():
-    if app.admin_id is None:
-        return
     devices = [{'id': x,
                 'state': device.get_state(),
                 'state_label': device.get_state_label(),
@@ -130,9 +130,13 @@ def update_admin():
     builder_rules = []
     for device in device_ids.values():
         builder_rules.append(device.build_rule())
-    emit('update', {'devices': devices, 'builder_rules': builder_rules, 'rules': rules, 'device_names': device_names}, room=app.admin_id)
+    from state import device_names
+    for admin_id in app.admin_id:
+        emit('update',
+             {'devices': devices, 'builder_rules': builder_rules, 'rules': rules, 'device_names': device_names},
+             room=admin_id)
 
 
 if __name__ == '__main__':
-    app.admin_id = None
+    app.admin_id = []
     socketio.run(app, debug=True, host='0.0.0.0')

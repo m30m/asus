@@ -36,7 +36,7 @@ class Lamp(Actuator):
     def build_rule(self):
         return {
             'type': 'numeric',
-            'label': 'Lamp: %s' % device_names[self.device_id],
+            'label': 'Lamp: %s' % device_names.get(self.device_id, self.type),
             'id': self.device_id,
         }
 
@@ -53,7 +53,7 @@ class Door(Actuator):
     def build_rule(self):
         return {
             'type': 'radio',
-            'label': 'Smart Door: %s' % device_names[self.device_id],
+            'label': 'Smart Door: %s' % device_names.get(self.device_id, self.type),
             'id': self.device_id,
             'choices': [{'label': "Is Locked", 'value': False}, {'label': "Is Unlocked", 'value': True}]
         }

@@ -36,7 +36,8 @@ def door():
     return render_template('door_lock.html')
 
 
-from state import device_ids
+from state import device_ids, rules_given_id
+
 rules = []
 
 @socketio.on('admin')
@@ -84,6 +85,10 @@ def update_state(message):
         device.receive_state(message['state'])
     elif isinstance(device, Actuator):
         device.set_state(message['state'])
+    if request.sid in rules_given_id:
+      for rule in rules_given_id[request.sid]:
+        print("rule evaluated as {}".format(rule.evaluate()))
+        rule.execute()
     print('received message: ' + str(message))
     update_admin()
 
@@ -92,6 +97,8 @@ def update_state(message):
 def update_rules(message):
     global rules
     rules = message
+    rules_given_id.clear()
+    print("update rules given id {}".format(rules_given_id))
     for r in rules:
         print(r)
         rule = Rule(r)
